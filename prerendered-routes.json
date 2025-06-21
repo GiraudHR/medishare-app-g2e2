@@ -1,0 +1,11 @@
+{
+  "routes": [
+    "/dashboard",
+    "/donate-medicine",
+    "/forgot-password",
+    "/login",
+    "/medicine-info",
+    "/register",
+    "/request-medicine"
+  ]
+}
