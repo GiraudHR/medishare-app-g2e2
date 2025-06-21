@@ -1,0 +1,383 @@
+<!-- components/medicines/donate-medicine/donate-medicine.component.html -->
+<div class="donate-container">
+  <!-- Header -->
+  <header class="donate-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button (click)="router.navigate(['/dashboard'])" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Volver al Dashboard
+        </button>
+        <div class="page-title">
+          <h1>Donar Medicamento</h1>
+          <p>Comparte medicamentos que ya no necesitas</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="points-display">
+          <span class="points-icon">🏆</span>
+          <span>{{ authService.getCurrentUser()?.points || 0 }} puntos</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="donate-main">
+    <div class="donate-content">
+      <div class="progress-section">
+        <div class="progress-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <span>Información del Medicamento</span>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="form-section">
+        <form [formGroup]="donateForm" (ngSubmit)="onSubmit()" class="donate-form">
+          
+          <div class="form-card">
+            <div class="card-header">
+              <div class="card-icon">💊</div>
+              <div class="card-title">
+                <h3>Información Básica</h3>
+                <p>Datos principales del medicamento</p>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="activePrinciple">Principio Activo *</label>
+                  <input 
+                    type="text" 
+                    id="activePrinciple" 
+                    formControlName="activePrinciple"
+                    [class.error]="activePrinciple?.invalid && activePrinciple?.touched"
+                    placeholder="Ej: Paracetamol">
+                  <div class="error-messages" *ngIf="activePrinciple?.invalid && activePrinciple?.touched">
+                    <span *ngIf="activePrinciple?.errors?.['required']">El principio activo es requerido</span>
+                    <span *ngIf="activePrinciple?.errors?.['minlength']">Mínimo 3 caracteres</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="commercialName">Nombre Comercial *</label>
+                  <input 
+                    type="text" 
+                    id="commercialName" 
+                    formControlName="commercialName"
+                    [class.error]="commercialName?.invalid && commercialName?.touched"
+                    placeholder="Ej: Tylenol">
+                  <div class="error-messages" *ngIf="commercialName?.invalid && commercialName?.touched">
+                    <span *ngIf="commercialName?.errors?.['required']">El nombre comercial es requerido</span>
+                    <span *ngIf="commercialName?.errors?.['minlength']">Mínimo 2 caracteres</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="laboratory">Laboratorio *</label>
+                  <input 
+                    type="text" 
+                    id="laboratory" 
+                    formControlName="laboratory"
+                    [class.error]="laboratory?.invalid && laboratory?.touched"
+                    placeholder="Ej: Bayer">
+                  <div class="error-messages" *ngIf="laboratory?.invalid && laboratory?.touched">
+                    <span *ngIf="laboratory?.errors?.['required']">El laboratorio es requerido</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="category">Categoría *</label>
+                  <select 
+                    id="category" 
+                    formControlName="category"
+                    [class.error]="category?.invalid && category?.touched">
+                    <option value="">Selecciona una categoría</option>
+                    <option *ngFor="let cat of categories" [value]="cat.id">
+                      {{ cat.name }} ({{ cat.pointsMultiplier }}x puntos)
+                    </option>
+                  </select>
+                  <div class="error-messages" *ngIf="category?.invalid && category?.touched">
+                    <span *ngIf="category?.errors?.['required']">La categoría es requerida</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="card-header">
+              <div class="card-icon">📋</div>
+              <div class="card-title">
+                <h3>Detalles del Producto</h3>
+                <p>Información específica del medicamento</p>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="expirationDate">Fecha de Caducidad *</label>
+                  <input 
+                    type="date" 
+                    id="expirationDate" 
+                    formControlName="expirationDate"
+                    [class.error]="expirationDate?.invalid && expirationDate?.touched">
+                  <div class="error-messages" *ngIf="expirationDate?.invalid && expirationDate?.touched">
+                    <span *ngIf="expirationDate?.errors?.['required']">La fecha de caducidad es requerida</span>
+                    <span *ngIf="expirationDate?.errors?.['invalidExpirationDate']">
+                      El medicamento debe tener al menos 3 meses antes de expirar
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="batchNumber">Número de Lote *</label>
+                  <input 
+                    type="text" 
+                    id="batchNumber" 
+                    formControlName="batchNumber"
+                    [class.error]="batchNumber?.invalid && batchNumber?.touched"
+                    placeholder="Ej: L123456">
+                  <div class="error-messages" *ngIf="batchNumber?.invalid && batchNumber?.touched">
+                    <span *ngIf="batchNumber?.errors?.['required']">El número de lote es requerido</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="quantity">Cantidad *</label>
+                  <input 
+                    type="number" 
+                    id="quantity" 
+                    formControlName="quantity"
+                    [class.error]="quantity?.invalid && quantity?.touched"
+                    min="1" 
+                    max="1000"
+                    placeholder="0">
+                  <div class="error-messages" *ngIf="quantity?.invalid && quantity?.touched">
+                    <span *ngIf="quantity?.errors?.['required']">La cantidad es requerida</span>
+                    <span *ngIf="quantity?.errors?.['min']">Mínimo 1 unidad</span>
+                    <span *ngIf="quantity?.errors?.['max']">Máximo 1000 unidades</span>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="unitType">Tipo de Unidad *</label>
+                  <select 
+                    id="unitType" 
+                    formControlName="unitType"
+                    [class.error]="unitType?.invalid && unitType?.touched">
+                    <option *ngFor="let unit of unitTypes" [value]="unit.value">
+                      {{ unit.label }}
+                    </option>
+                  </select>
+                  <div class="error-messages" *ngIf="unitType?.invalid && unitType?.touched">
+                    <span *ngIf="unitType?.errors?.['required']">El tipo de unidad es requerido</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="address">Ubicación *</label>
+                  <input 
+                    type="string" 
+                    id="address" 
+                    formControlName="address"
+                    [class.error]="address?.invalid && address?.touched"
+                    maxlength="1000"
+                    placeholder="Unidad Zacatenco">
+                </div>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="description">Descripción Adicional</label>
+                <textarea 
+                  id="description" 
+                  formControlName="description"
+                  rows="3"
+                  placeholder="Información adicional sobre el medicamento (opcional)">
+                </textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="card-header">
+              <div class="card-icon">📷</div>
+              <div class="card-title">
+                <h3>Imagen del Medicamento</h3>
+                <p>Sube una foto del medicamento (opcional)</p>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <div class="image-upload-section">
+                <div class="image-upload-area" *ngIf="!imagePreview">
+                  <input 
+                    type="file" 
+                    id="imageUpload" 
+                    accept="image/*"
+                    (change)="onImageSelected($event)"
+                    hidden>
+                  <label for="imageUpload" class="upload-label">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">
+                      <h4>Subir imagen</h4>
+                      <p>Arrastra una imagen o haz clic para seleccionar</p>
+                      <span class="upload-hint">Máximo 5MB - JPG, PNG, GIF</span>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="image-preview" *ngIf="imagePreview">
+                  <img [src]="imagePreview" alt="Vista previa">
+                  <div class="image-actions">
+                    <button type="button" (click)="imagePreview = null; selectedImage = null" class="remove-image-btn">
+                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                      </svg>
+                      Quitar imagen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card points-card" *ngIf="estimatedPoints > 0">
+            <div class="card-header">
+              <div class="card-icon">🏆</div>
+              <div class="card-title">
+                <h3>Puntos Estimados</h3>
+                <p>Puntos que ganarás por esta donación</p>
+              </div>
+            </div>
+
+            <div class="card-content">
+              <div class="points-estimation">
+                <div class="points-value">
+                  <span class="points-number">{{ estimatedPoints }}</span>
+                  <span class="points-label">puntos</span>
+                </div>
+                <div class="points-explanation">
+                  <p *ngIf="calculating" class="calculating">Calculando puntos...</p>
+                  <p *ngIf="!calculating">
+                    Los puntos se calculan basándose en la cantidad, categoría y tiempo hasta la expiración.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="success-message" *ngIf="successMessage">
+            <div class="message-icon">✅</div>
+            {{ successMessage }}
+          </div>
+
+          <div class="error-message" *ngIf="errorMessage">
+            <div class="message-icon">❌</div>
+            {{ errorMessage }}
+          </div>
+
+          <div class="form-actions">
+            <button type="button" (click)="clearForm()" class="clear-btn" [disabled]="loading">
+              Limpiar Formulario
+            </button>
+            
+            <button 
+              type="submit" 
+              class="submit-btn"
+              [disabled]="donateForm.invalid || loading">
+              <span *ngIf="loading" class="spinner"></span>
+              <span *ngIf="!loading" class="submit-icon">💝</span>
+              {{ loading ? 'Donando...' : 'Donar Medicamento' }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="info-sidebar">
+        <div class="info-card">
+          <div class="info-header">
+            <div class="info-icon">💡</div>
+            <h3>Consejos para Donar</h3>
+          </div>
+          <div class="info-content">
+            <ul class="tips-list">
+              <li>
+                <span class="tip-icon">✅</span>
+                Verifica que el medicamento no haya expirado
+              </li>
+              <li>
+                <span class="tip-icon">✅</span>
+                Asegúrate de que el empaque esté en buen estado
+              </li>
+              <li>
+                <span class="tip-icon">✅</span>
+                Incluye la mayor información posible
+              </li>
+              <li>
+                <span class="tip-icon">✅</span>
+                Una foto clara ayuda a otros usuarios
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-header">
+            <div class="info-icon">🎯</div>
+            <h3>Sistema de Puntos</h3>
+          </div>
+          <div class="info-content">
+            <div class="points-info">
+              <p>Gana puntos por cada donación:</p>
+              <div class="points-breakdown">
+                <div class="points-item">
+                  <span class="points-category">Cantidad base:</span>
+                  <span class="points-desc">1-100 puntos</span>
+                </div>
+                <div class="points-item">
+                  <span class="points-category">Multiplicador categoría:</span>
+                  <span class="points-desc">0.8x - 1.5x</span>
+                </div>
+                <div class="points-item">
+                  <span class="points-category">Tiempo restante:</span>
+                  <span class="points-desc">Bonus por tiempo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-header">
+            <div class="info-icon">🌍</div>
+            <h3>Impacto Ambiental</h3>
+          </div>
+          <div class="info-content">
+            <p>Al donar medicamentos:</p>
+            <ul class="impact-list">
+              <li>Reduces el desperdicio farmacéutico</li>
+              <li>Ayudas a otros en tu comunidad</li>
+              <li>Contribuyes a la economía circular</li>
+              <li>Proteges el medio ambiente</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>

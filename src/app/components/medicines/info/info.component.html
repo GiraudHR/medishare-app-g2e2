@@ -1,0 +1,261 @@
+<div class="info-container">
+  <header class="info-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button (click)="goToDashboard()" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Volver al Dashboard
+        </button>
+        <div class="page-title">
+          <h1>Información sobre Medicamentos</h1>
+          <p>Uso responsable y disposición adecuada</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button (click)="goToDonateMedicine()" class="donate-btn">
+          <span class="donate-icon">💝</span>
+          Donar Medicamento
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="info-main">
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h2>¿Sabías que el manejo inadecuado de medicamentos puede ser peligroso?</h2>
+          <p>
+            Los medicamentos caducados o mal almacenados pueden perder eficacia, volverse tóxicos 
+            y contaminar el medio ambiente. Conoce las mejores prácticas para un uso responsable.
+          </p>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-icon">🩺</div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">15,000</span>
+              <span class="stat-label">toneladas de residuos farmacéuticos anuales en México</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tabs-section">
+      <div class="tabs-container">
+        <div class="tabs-nav">
+          <button 
+            *ngFor="let section of infoSections"
+            (click)="setActiveSection(section.id)"
+            [class.active]="activeSection === section.id"
+            [class.warning]="section.warning"
+            class="tab-btn">
+            <span class="tab-icon">{{ section.icon }}</span>
+            <span class="tab-text">{{ section.title }}</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="content-container">
+        <div *ngFor="let section of infoSections" 
+             [id]="'section-' + section.id"
+             [class.active]="activeSection === section.id"
+             class="content-panel">
+          
+          <div class="panel-header" [class.warning]="section.warning">
+            <div class="panel-icon">{{ section.icon }}</div>
+            <div class="panel-title">
+              <h3>{{ section.title }}</h3>
+              <div class="warning-badge" *ngIf="section.warning">
+                <span class="badge-icon">⚠️</span>
+                <span>Información crítica</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-content">
+            <div class="content-main">
+              <div class="content-text">
+                <p *ngFor="let paragraph of section.content" class="content-paragraph">
+                  {{ paragraph }}
+                </p>
+              </div>
+
+              <div class="tips-section" *ngIf="section.tips && section.tips.length > 0">
+                <h4>Recomendaciones importantes:</h4>
+                <ul class="tips-list">
+                  <li *ngFor="let tip of section.tips" class="tip-item">
+                    <span class="tip-icon">✅</span>
+                    <span class="tip-text">{{ tip }}</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="statistics-section">
+      <div class="statistics-container">
+        <h3>Datos importantes sobre residuos farmacéuticos</h3>
+        <div class="statistics-grid">
+          <div *ngFor="let stat of statistics" class="stat-card">
+            <div class="stat-icon">{{ stat.icon }}</div>
+            <div class="stat-content">
+              <div class="stat-number">{{ stat.number }}</div>
+              <div class="stat-unit">{{ stat.unit }}</div>
+              <div class="stat-description">{{ stat.description }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="centers-section">
+      <div class="centers-container">
+        <div class="centers-header">
+          <h3>Centros de Acopio de Medicamentos</h3>
+          <p>Lugares donde puedes depositar medicamentos caducados o no utilizados de forma segura</p>
+        </div>
+
+        <div class="centers-grid">
+          <div *ngFor="let center of collectionCenters" class="center-card">
+            <div class="center-header">
+              <div class="center-icon" [ngClass]="'icon-' + center.type">
+                <span *ngIf="center.type === 'pharmacy'">🏪</span>
+                <span *ngIf="center.type === 'hospital'">🏥</span>
+                <span *ngIf="center.type === 'singrem'">♻️</span>
+              </div>
+              <div class="center-info">
+                <h4>{{ center.name }}</h4>
+                <div class="center-type">
+                  <span *ngIf="center.type === 'pharmacy'" class="type-badge pharmacy">Farmacia</span>
+                  <span *ngIf="center.type === 'hospital'" class="type-badge hospital">Hospital</span>
+                  <span *ngIf="center.type === 'singrem'" class="type-badge singrem">SINGREM</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="center-details">
+              <div class="detail-item">
+                <span class="detail-icon">📍</span>
+                <span class="detail-text">{{ center.address }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-icon">🕒</span>
+                <span class="detail-text">{{ center.schedule }}</span>
+              </div>
+              <div class="detail-item" *ngIf="center.phone">
+                <span class="detail-icon">📞</span>
+                <span class="detail-text">{{ center.phone }}</span>
+              </div>
+              <div class="detail-item" *ngIf="center.website">
+                <span class="detail-icon">🌐</span>
+                <button (click)="openExternalLink(center.website!)" class="website-link">
+                  {{ center.website }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="regulatory-section">
+      <div class="regulatory-container">
+        <div class="regulatory-header">
+          <h3>Marco Regulatorio en México</h3>
+          <p>Conoce las instituciones y normas que regulan el manejo de medicamentos</p>
+        </div>
+
+        <div class="regulatory-grid">
+          <div class="regulatory-card singrem">
+            <div class="regulatory-icon">♻️</div>
+            <div class="regulatory-content">
+              <h4>SINGREM</h4>
+              <p>Sistema Nacional de Gestión de Residuos de Envases y Medicamentos</p>
+              <ul>
+                <li>Organización responsable del acopio</li>
+                <li>Red nacional de centros de recolección</li>
+                <li>Tratamiento especializado de residuos</li>
+              </ul>
+              <button (click)="openExternalLink('singrem.org.mx')" class="info-link">
+                Visitar SINGREM
+              </button>
+            </div>
+          </div>
+
+          <div class="regulatory-card cofepris">
+            <div class="regulatory-icon">🏛️</div>
+            <div class="regulatory-content">
+              <h4>COFEPRIS</h4>
+              <p>Comisión Federal para la Protección contra Riesgos Sanitarios</p>
+              <ul>
+                <li>Regulación sanitaria de medicamentos</li>
+                <li>Normatividad de disposición</li>
+                <li>Vigilancia del cumplimiento</li>
+              </ul>
+              <button (click)="openExternalLink('gob.mx/cofepris')" class="info-link">
+                Información COFEPRIS
+              </button>
+            </div>
+          </div>
+
+          <div class="regulatory-card semarnat">
+            <div class="regulatory-icon">🌳</div>
+            <div class="regulatory-content">
+              <h4>SEMARNAT</h4>
+              <p>Secretaría de Medio Ambiente y Recursos Naturales</p>
+              <ul>
+                <li>Protección ambiental</li>
+                <li>Manejo de residuos peligrosos</li>
+                <li>Políticas de sustentabilidad</li>
+              </ul>
+              <button (click)="openExternalLink('gob.mx/semarnat')" class="info-link">
+                Portal SEMARNAT
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="action-section">
+      <div class="action-container">
+        <div class="action-content">
+          <div class="action-text">
+            <h3>¡Únete al cambio!</h3>
+            <p>
+              Forma parte de la economía circular farmacéutica. Dona medicamentos 
+              que ya no necesites y ayuda a otros mientras proteges el medio ambiente.
+            </p>
+          </div>
+          <div class="action-buttons">
+            <button (click)="goToDonateMedicine()" class="primary-action-btn">
+              <span class="btn-icon">💝</span>
+              Donar Medicamentos
+            </button>
+            <button (click)="openExternalLink('singrem.org.mx')" class="secondary-action-btn">
+              <span class="btn-icon">📍</span>
+              Encontrar Centro de Acopio
+            </button>
+          </div>
+        </div>
+        <div class="action-visual">
+          <div class="visual-element">
+            <div class="circle-1">🌍</div>
+            <div class="circle-2">💊</div>
+            <div class="circle-3">♻️</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

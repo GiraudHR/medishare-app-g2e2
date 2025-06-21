@@ -1,0 +1,81 @@
+<div class="login-container">
+    <div class="login-card">
+      <div class="logo-section">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>MediShare</h1>
+        <p class="subtitle">Intercambio de medicamentos</p>
+      </div>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email"
+            autocomplete="off"
+            [class.error]="email?.invalid && email?.touched"
+            placeholder="ejemplo@correo.com">
+          <div class="error-messages" *ngIf="email?.invalid && email?.touched">
+            <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
+            <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password"
+            [class.error]="password?.invalid && password?.touched"
+            placeholder="Tu contraseña">
+          <div class="error-messages" *ngIf="password?.invalid && password?.touched">
+            <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
+            <span *ngIf="password?.errors?.['minlength']">Mínimo 6 caracteres</span>
+          </div>
+        </div>
+  
+        <div class="form-actions">
+          <a routerLink="/forgot-password" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        </div>
+  
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+  
+        <button 
+          type="submit" 
+          class="login-btn"
+          [disabled]="loginForm.invalid || loading">
+          <span *ngIf="loading" class="spinner"></span>
+          {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+        </button>
+      </form>
+  
+      <div class="register-section">
+        <p>¿No tienes cuenta? <a routerLink="/register">Regístrate aquí</a></p>
+      </div>
+  
+      <div class="info-section">
+        <div class="feature">
+          <div class="feature-icon">💊</div>
+          <p>Dona medicamentos no utilizados</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔄</div>
+          <p>Intercambia por puntos</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🌍</div>
+          <p>Economía circular solidaria</p>
+        </div>
+      </div>
+    </div>
+  </div>

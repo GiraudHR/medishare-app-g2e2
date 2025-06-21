@@ -1,0 +1,148 @@
+<!-- components/auth/register/register.component.html -->
+<div class="register-container">
+  <div class="register-card">
+    <div class="logo-section">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h1>Únete a MediShare</h1>
+      <p class="subtitle">Crea tu cuenta y comienza a compartir</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="firstName">Nombre</label>
+          <input 
+            type="text" 
+            id="firstName" 
+            formControlName="firstName"
+            [class.error]="firstName?.invalid && firstName?.touched"
+            placeholder="Tu nombre">
+          <div class="error-messages" *ngIf="firstName?.invalid && firstName?.touched">
+            <span *ngIf="firstName?.errors?.['required']">El nombre es requerido</span>
+            <span *ngIf="firstName?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="lastName">Apellido</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            formControlName="lastName"
+            [class.error]="lastName?.invalid && lastName?.touched"
+            placeholder="Tu apellido">
+          <div class="error-messages" *ngIf="lastName?.invalid && lastName?.touched">
+            <span *ngIf="lastName?.errors?.['required']">El apellido es requerido</span>
+            <span *ngIf="lastName?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          [class.error]="email?.invalid && email?.touched"
+          placeholder="ejemplo@correo.com">
+        <div class="error-messages" *ngIf="email?.invalid && email?.touched">
+          <span *ngIf="email?.errors?.['required']">El correo es requerido</span>
+          <span *ngIf="email?.errors?.['email']">Ingresa un correo válido</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phoneNumber">Teléfono</label>
+        <input 
+          type="tel" 
+          id="phoneNumber" 
+          formControlName="phoneNumber"
+          [class.error]="phoneNumber?.invalid && phoneNumber?.touched"
+          placeholder="1234567890">
+        <div class="error-messages" *ngIf="phoneNumber?.invalid && phoneNumber?.touched">
+          <span *ngIf="phoneNumber?.errors?.['required']">El teléfono es requerido</span>
+          <span *ngIf="phoneNumber?.errors?.['pattern']">Ingresa 10 dígitos sin espacios</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="password">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password"
+            [class.error]="password?.invalid && password?.touched"
+            placeholder="Mínimo 6 caracteres">
+          <div class="error-messages" *ngIf="password?.invalid && password?.touched">
+            <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
+            <span *ngIf="password?.errors?.['minlength']">Mínimo 6 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group half-width">
+          <label for="confirmPassword">Confirmar contraseña</label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            formControlName="confirmPassword"
+            [class.error]="confirmPassword?.invalid && confirmPassword?.touched"
+            placeholder="Repite la contraseña">
+          <div class="error-messages" *ngIf="confirmPassword?.invalid && confirmPassword?.touched">
+            <span *ngIf="confirmPassword?.errors?.['required']">Confirma tu contraseña</span>
+            <span *ngIf="confirmPassword?.errors?.['passwordMismatch']">Las contraseñas no coinciden</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="register-btn"
+        [disabled]="registerForm.invalid || loading">
+        <span *ngIf="loading" class="spinner"></span>
+        {{ loading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+      </button>
+    </form>
+
+    <div class="login-section">
+      <p>¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión aquí</a></p>
+    </div>
+
+    <div class="benefits-section">
+      <h3>Beneficios de registrarte</h3>
+      <div class="benefits-grid">
+        <div class="benefit">
+          <div class="benefit-icon">🎯</div>
+          <p>Gana puntos por cada donación</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">🔍</div>
+          <p>Busca medicamentos específicos</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">📊</div>
+          <p>Historial de intercambios</p>
+        </div>
+        <div class="benefit">
+          <div class="benefit-icon">🏆</div>
+          <p>Sistema de reputación</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

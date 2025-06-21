@@ -1,0 +1,353 @@
+<!-- components/medicines/request-medicine/request-medicine.component.html -->
+<div class="request-container">
+  <!-- Header -->
+  <header class="request-header">
+    <div class="header-content">
+      <div class="header-left">
+        <button (click)="goToDashboard()" class="back-btn">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Volver al Dashboard
+        </button>
+        <div class="page-title">
+          <h1>Buscar Medicamentos</h1>
+          <p>Encuentra medicamentos disponibles en la comunidad</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="points-display">
+          <span class="points-icon">🏆</span>
+          <span>{{ currentUser?.points || 0 }} puntos</span>
+        </div>
+        <button (click)="goToDonateMedicine()" class="donate-btn">
+          <span class="donate-icon">💝</span>
+          Donar Medicamento
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="request-main">
+    <!-- Search and Filters Section -->
+    <section class="search-section">
+      <div class="search-content">
+        <form [formGroup]="searchForm" class="search-form">
+          <!-- Main Search Bar -->
+          <div class="main-search">
+            <div class="search-input-group">
+              <div class="search-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+                  <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                formControlName="search"
+                placeholder="Buscar por nombre, principio activo o laboratorio..."
+                class="search-input">
+              <button type="button" (click)="clearFilters()" class="clear-search-btn" *ngIf="searchTerm">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+                  <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="search-actions">
+              <button type="button" (click)="toggleFilters()" class="filters-btn" [class.active]="showFilters">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Filtros
+              </button>
+
+              <button type="button" (click)="toggleViewMode()" class="view-toggle-btn">
+                <svg *ngIf="viewMode === 'grid'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                  <rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                  <rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                  <rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <svg *ngIf="viewMode === 'list'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/>
+                  <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/>
+                  <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/>
+                  <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" stroke-width="2"/>
+                  <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" stroke-width="2"/>
+                  <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Advanced Filters -->
+          <div class="advanced-filters" [class.show]="showFilters">
+            <div class="filters-grid">
+              <div class="filter-group">
+                <label for="category">Categoría</label>
+                <select id="category" formControlName="category">
+                  <option value="">Todas las categorías</option>
+                  <option *ngFor="let category of categories" [value]="category.id">
+                    {{ category.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="sortBy">Ordenar por</label>
+                <select id="sortBy" formControlName="sortBy">
+                  <option value="createdAt">Fecha de publicación</option>
+                  <option value="name">Nombre</option>
+                  <option value="expiration">Fecha de caducidad</option>
+                  <option value="points">Puntos</option>
+                </select>
+              </div>
+
+              <div class="filter-group">
+                <label for="sortOrder">Orden</label>
+                <select id="sortOrder" formControlName="sortOrder">
+                  <option value="desc">Descendente</option>
+                  <option value="asc">Ascendente</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Results Summary -->
+        <div class="results-summary">
+          <div class="results-info">
+            <span class="results-count">{{ totalCount }} medicamentos encontrados</span>
+            <span class="results-filters" *ngIf="selectedCategory || searchTerm">
+              <span *ngIf="searchTerm" class="filter-tag">
+                Búsqueda: "{{ searchTerm }}"
+                <button (click)="searchForm.patchValue({search: ''})" class="remove-filter">×</button>
+              </span>
+              <span *ngIf="selectedCategory" class="filter-tag">
+                Categoría: {{ getCategoryName(selectedCategory) }}
+                <button (click)="searchForm.patchValue({category: ''})" class="remove-filter">×</button>
+              </span>
+            </span>
+          </div>
+          <div class="view-mode-info">
+            Página {{ currentPage }} de {{ getTotalPages() }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-section">
+      <div class="loading-spinner"></div>
+      <p>Buscando medicamentos...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !loading" class="error-section">
+      <div class="error-icon">⚠️</div>
+      <h3>Error al cargar medicamentos</h3>
+      <p>{{ error }}</p>
+      <button (click)="loadMedicines()" class="retry-btn">Reintentar</button>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && medicines.length === 0" class="empty-section">
+      <div class="empty-icon">🔍</div>
+      <h3>No se encontraron medicamentos</h3>
+      <p *ngIf="searchTerm || selectedCategory">
+        Intenta ajustar los filtros de búsqueda o explora todas las categorías.
+      </p>
+      <p *ngIf="!searchTerm && !selectedCategory">
+        Aún no hay medicamentos disponibles. ¡Sé el primero en donar!
+      </p>
+      <div class="empty-actions">
+        <button (click)="clearFilters()" class="clear-filters-btn" *ngIf="searchTerm || selectedCategory">
+          Limpiar Filtros
+        </button>
+        <button (click)="goToDonateMedicine()" class="donate-first-btn">
+          Donar Medicamento
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <section *ngIf="!loading && !error && medicines.length > 0" class="results-section">
+      <!-- Grid View -->
+      <div *ngIf="viewMode === 'grid'" class="medicines-grid">
+        <div *ngFor="let medicine of medicines" class="medicine-card">
+          <div class="medicine-image" *ngIf="medicine.imageUrl; else noMedicineImage">
+            <img [src]="medicine.imageUrl" [alt]="medicine.commercialName">
+            <div class="medicine-badge" *ngIf="isExpiringSoon(medicine.expirationDate)">
+              <span class="badge-icon">⚠️</span>
+              <span>Próximo a vencer</span>
+            </div>
+          </div>
+          <ng-template #noMedicineImage>
+            <div class="medicine-placeholder">
+              <div class="placeholder-icon">💊</div>
+              <div class="medicine-badge" *ngIf="isExpiringSoon(medicine.expirationDate)">
+                <span class="badge-icon">⚠️</span>
+                <span>Próximo a vencer</span>
+              </div>
+            </div>
+          </ng-template>
+
+          <div class="medicine-content">
+            <div class="medicine-header">
+              <h3 class="medicine-name">{{ medicine.commercialName }}</h3>
+              <div class="medicine-points">
+                <span class="points-value">{{ medicine.pointsValue }}</span>
+                <span class="points-label">pts</span>
+              </div>
+            </div>
+
+            <div class="medicine-details">
+              <p class="active-principle">{{ medicine.activePrinciple }}</p>
+              <p class="laboratory">{{ medicine.laboratory }}</p>
+              
+              <div class="medicine-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Cantidad:</span>
+                  <span class="meta-value">{{ medicine.quantity }} {{ medicine.unitType }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Vence:</span>
+                  <span class="meta-value" [class.expiring]="isExpiringSoon(medicine.expirationDate)">
+                    {{ getDaysUntilExpiration(medicine.expirationDate) }} días
+                  </span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Donado:</span>
+                  <span class="meta-value">{{ getTimeAgo(medicine.createdAt) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="medicine-footer">
+              <div class="donor-info">
+                <div class="donor-avatar">{{ medicine.donorName.charAt(0) }}</div>
+                <span class="donor-name">{{ medicine.donorName }}</span>
+              </div>
+
+              <div class="medicine-actions">
+                <button (click)="viewMedicineDetails(medicine)" class="view-btn">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
+                <button (click)="requestMedicine(medicine)" class="request-btn">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 14C19.3636 14 19.7273 14.1414 20 14.4142C20.2727 14.6869 20.4141 15.0606 20.4141 15.4242V16.5858C20.4141 16.9494 20.2727 17.3232 20 17.5959L14.5858 23.0101C14.3131 23.2828 13.9394 23.4242 13.5758 23.4242C13.2121 23.4242 12.8384 23.2828 12.5657 23.0101L1.9899 12.4343C1.7172 12.1616 1.5758 11.7879 1.5758 11.4243V0.5758C1.5758 0.2121 1.7172 -0.1616 1.9899 -0.4343C2.2626 -0.7070 2.6364 -0.8485 3 -0.8485H13.9485C14.3121 -0.8485 14.6859 -0.7070 14.9586 -0.4343L20.4141 4.0101C20.6869 4.2828 20.8283 4.6565 20.8283 5.0202C20.8283 5.3838 20.6869 5.7576 20.4141 6.0303L15 11.4444C14.7273 11.7172 14.3535 11.8586 13.9899 11.8586C13.6263 11.8586 13.2525 11.7172 12.9798 11.4444L10.5858 9.0505C10.3131 8.7778 10.1717 8.4040 10.1717 8.0404C10.1717 7.6768 10.3131 7.3030 10.5858 7.0303L13.9394 3.6768"/>
+                  </svg>
+                  Solicitar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- List View -->
+      <div *ngIf="viewMode === 'list'" class="medicines-list">
+        <div *ngFor="let medicine of medicines" class="medicine-list-item">
+          <div class="list-item-image" *ngIf="medicine.imageUrl; else noListImage">
+            <img [src]="medicine.imageUrl" [alt]="medicine.commercialName">
+          </div>
+          <ng-template #noListImage>
+            <div class="list-item-placeholder">💊</div>
+          </ng-template>
+
+          <div class="list-item-content">
+            <div class="list-item-header">
+              <div class="list-item-title">
+                <h3>{{ medicine.commercialName }}</h3>
+                <span class="list-item-category">{{ getCategoryName(medicine.category) }}</span>
+              </div>
+              <div class="list-item-points">
+                <span class="points-value">{{ medicine.pointsValue }}</span>
+                <span class="points-label">puntos</span>
+              </div>
+            </div>
+
+            <div class="list-item-details">
+              <p class="list-item-principle">{{ medicine.activePrinciple }}</p>
+              <p class="list-item-lab">{{ medicine.laboratory }}</p>
+              
+              <div class="list-item-meta">
+                <span class="meta-tag">{{ medicine.quantity }} {{ medicine.unitType }}</span>
+                <span class="meta-tag" [class.expiring]="isExpiringSoon(medicine.expirationDate)">
+                  Vence en {{ getDaysUntilExpiration(medicine.expirationDate) }} días
+                </span>
+                <span class="meta-tag">{{ getTimeAgo(medicine.createdAt) }}</span>
+              </div>
+
+              <div class="list-item-description" *ngIf="medicine.description">
+                <p>{{ medicine.description }}</p>
+              </div>
+            </div>
+
+            <div class="list-item-footer">
+              <div class="list-item-donor">
+                <div class="donor-avatar">{{ medicine.donorName.charAt(0) }}</div>
+                <span>Donado por {{ medicine.donorName }}</span>
+              </div>
+
+              <div class="list-item-actions">
+                <button (click)="viewMedicineDetails(medicine)" class="view-details-btn">
+                  Ver Detalles
+                </button>
+                <button (click)="requestMedicine(medicine)" class="request-medicine-btn">
+                  Solicitar Medicamento
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-section" *ngIf="getTotalPages() > 1">
+        <div class="pagination">
+          <button 
+            (click)="onPageChange(currentPage - 1)" 
+            [disabled]="currentPage === 1"
+            class="pagination-btn prev">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Anterior
+          </button>
+
+          <div class="pagination-numbers">
+            <button 
+              *ngFor="let page of getPaginationPages()"
+              (click)="onPageChange(page)"
+              [class.active]="page === currentPage"
+              class="pagination-number">
+              {{ page }}
+            </button>
+          </div>
+
+          <button 
+            (click)="onPageChange(currentPage + 1)" 
+            [disabled]="currentPage === getTotalPages()"
+            class="pagination-btn next">
+            Siguiente
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="pagination-info">
+          Mostrando {{ (currentPage - 1) * pageSize + 1 }} - {{ calculate(currentPage,pageSize,totalCount) }} de {{ totalCount }} medicamentos
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
